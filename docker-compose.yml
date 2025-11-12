@@ -1,0 +1,56 @@
+services:
+  compras:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: compras
+    restart: always
+    environment:
+      PORT: ${PORT}
+
+      MONGODB_HOST: "mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@compras-mongodb:27017/${MONGODB_DATABASE}?authSource=admin"
+
+      SUPABASE_PROJECT_URL: ${SUPABASE_PROJECT_URL}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      SERVICE_AUTH_EMAIL: ${SERVICE_AUTH_EMAIL}
+      SERVICE_AUTH_PASSWORD: ${SERVICE_AUTH_PASSWORD}
+
+      STRIPE_API_KEY: ${STRIPE_API_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+
+      CONTENIDOS_SERVICE_BASE_URL: http://contenidos:${CONTENIDOS_SERVICE_PORT}
+      USUARIOS_SERVICE_BASE_URL: http://usuarios:${USUARIOS_SERVICE_PORT}
+      ESTADISTICAS_SERVICE_BASE_URL: http://estadisticas:${ESTADISTICAS_SERVICE_PORT}
+      APP_BASE_URL: ${APP_BASE_URL}
+    depends_on:
+      - compras-mongodb
+    ports:
+      - "${PORT}:${PORT}"
+    networks:
+      compras:
+      undersounds:
+    profiles:
+      - prod
+
+  compras-mongodb:
+    image: bitnami/mongodb:latest
+    container_name: compras-mongodb
+    restart: always
+    environment:
+      MONGODB_ROOT_USER: ${MONGODB_USERNAME}
+      MONGODB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGODB_DATABASE: ${MONGODB_DATABASE}
+    ports:
+      - "${MONGODB_EXT_PORT}:27017"
+    volumes:
+      - compras-mongodb-data:/bitnami/mongodb
+    networks:
+      compras:
+
+volumes:
+  compras-mongodb-data:
+
+networks:
+  compras:
+  undersounds:
+    external: true

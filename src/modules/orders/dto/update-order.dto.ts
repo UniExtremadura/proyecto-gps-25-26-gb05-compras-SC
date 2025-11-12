@@ -1,4 +1,14 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateOrderDto } from './create-order.dto';
+import { OrderStatus } from '../schemas/order.schema';
+import { IsEnum, IsString, ValidateIf } from 'class-validator';
 
-export class UpdateOrderDto extends PartialType(CreateOrderDto) {}
+export class UpdateOrderDto {
+	uuid: string;
+
+	@ValidateIf((o: UpdateOrderDto) => o.status !== undefined)
+	@IsEnum(OrderStatus)
+	status?: OrderStatus;
+
+	@ValidateIf((o: UpdateOrderDto) => o.stripeSessionId !== undefined)
+	@IsString()
+	stripeSessionId?: string;
+}

@@ -1,3 +1,41 @@
+import {
+	ArrayNotEmpty,
+	IsArray,
+	IsIn,
+	IsNotEmpty,
+	IsNumber,
+	Min,
+	ValidateIf,
+	ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class OrderItem {
+	@IsNotEmpty()
+	@IsIn(['song', 'album', 'merch'])
+	type: 'song' | 'album' | 'merch';
+
+	@IsNotEmpty()
+	uuid: string;
+
+	@ValidateIf((o: OrderItem) => o.type === 'song' || o.type === 'album')
+	@IsNotEmpty()
+	@IsIn(['cd', 'vinyl', 'cassette', 'digital'])
+	format?: 'cd' | 'vinyl' | 'cassette' | 'digital';
+
+	@IsNotEmpty()
+	@IsNumber()
+	@Min(1)
+	quantity: number;
+}
+
 export class CreateOrderDto {
-	// TODO: Definir CreateOrderDto
+	@IsNotEmpty()
+	@IsArray()
+	@ArrayNotEmpty()
+	@ValidateNested({ each: true })
+	@Type(() => OrderItem)
+	items: OrderItem[];
+
+	userUuid: string;
 }

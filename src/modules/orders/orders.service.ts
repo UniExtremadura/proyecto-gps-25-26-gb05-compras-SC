@@ -70,8 +70,9 @@ export class OrdersService {
 					title: response.data.title,
 					type,
 					format,
-					img: response.data.cover,
-					price: response.data.pricing[format!],
+					img: type === 'merch' ? response.data.previews[0] : response.data.cover,
+					price:
+						type === 'merch' ? response.data.price : response.data.pricing[format!],
 					quantity,
 				};
 			}),
@@ -83,7 +84,7 @@ export class OrdersService {
 				product_data: {
 					name: item.title,
 					description: item.format?.toUpperCase(),
-					images: ['https://imgpx.com/en/Qh0DIn8Ceqf5.png'],
+					images: [item.img],
 				},
 				unit_amount: item.price,
 			},

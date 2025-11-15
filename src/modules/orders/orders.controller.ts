@@ -3,6 +3,8 @@ import {
 	Controller,
 	Delete,
 	Get,
+	HttpCode,
+	HttpStatus,
 	InternalServerErrorException,
 	Param,
 	Post,
@@ -24,15 +26,19 @@ export class OrdersController {
 	constructor(private readonly ordersService: OrdersService) {}
 
 	@Get()
-	@Roles(['user', 'artist'])
+	@Roles(['user', 'artist', 'admin'])
 	@UseGuards(AuthGuard)
+	@HttpCode(HttpStatus.OK)
 	async getOrders(@SupabaseUser() sbUser: SbUser) {
-		return await this.ordersService.findByUserUuid(sbUser.id);
+		if (sbUser.role === 'admin') return await this.ordersService.findAll();
+		if (sbUser.role === 'user' || 'artist')
+			return await this.ordersService.findByUserUuid(sbUser.id);
 	}
 
 	@Get(':uuid')
 	@Roles(['user', 'artist', 'admin'])
 	@UseGuards(AuthGuard)
+	@HttpCode(HttpStatus.OK)
 	async getOrderByUuid(
 		@Param('uuid') uuid: string,
 		@SupabaseUser() sbUser: SbUser,
@@ -48,6 +54,7 @@ export class OrdersController {
 	@Post()
 	@Roles(['user', 'artist'])
 	@UseGuards(AuthGuard)
+	@HttpCode(HttpStatus.CREATED)
 	async postOrder(
 		@SupabaseUser() sbUser: SbUser,
 		@Body() createOrderDto: CreateOrderDto,
@@ -67,6 +74,7 @@ export class OrdersController {
 	@Put(':uuid')
 	@Roles(['admin'])
 	@UseGuards(AuthGuard)
+	@HttpCode(HttpStatus.OK)
 	async updateOrder(
 		@Param('uuid') uuid: string,
 		@Body() updateOrderDto: UpdateOrderDto,

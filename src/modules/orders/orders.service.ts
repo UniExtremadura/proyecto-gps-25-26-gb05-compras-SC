@@ -11,6 +11,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import {ServiceTokenProvider} from "../../common/providers/service-token.provider";
 
 @Injectable()
 export class OrdersService {
@@ -19,6 +20,7 @@ export class OrdersService {
 	constructor(
 		@InjectModel(Order.name) private orderModel: Model<Order>,
 		private readonly httpService: HttpService,
+		private readonly serviceTokenProvider: ServiceTokenProvider
 	) {}
 
 	async findAll(): Promise<Order[]> {
@@ -156,5 +158,33 @@ export class OrdersService {
 		return this.orderModel.findByIdAndUpdate(order._id, updateOrderDto, {
 			new: true,
 		});
+	}
+
+	async addDigitalLibraryToUser(stripeSessionId: string) {
+		const order = await this.findOneByStripeSessionId(stripeSessionId);
+		const library: { type: string; uuid: string }[] = [];
+
+		for (const item of order.items) {
+			if (item.format === 'digital') {
+				library.push({
+					type: item.type,
+					uuid: item.uuid,
+				});
+			}
+		}
+
+		if (library.length > 0) {
+			await firstValueFrom(
+				this.httpService.put(
+					`${process.env.CONTENIDOS_SERVICE_BASE_URL}/users/${order.userUuid}/library`,
+					{
+						items: library
+					},
+					{
+						headers: { Authorization: `Bearer ${await this.serviceTokenProvider.getToken()}` }
+					}
+				),
+			);
+		}
 	}
 }

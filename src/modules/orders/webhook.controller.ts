@@ -40,6 +40,7 @@ export class WebhookController {
 					event.data.object.id,
 					OrderStatus.PAID,
 				);
+				await this.ordersService.addDigitalLibraryToUser(event.data.object.id);
 			} else if (
 				event.type === 'checkout.session.expired' ||
 				event.type === 'checkout.session.async_payment_failed'

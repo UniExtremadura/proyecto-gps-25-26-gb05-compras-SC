@@ -1,6 +1,7 @@
 import { HydratedDocument, Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { v4 as uuidv4 } from 'uuid';
+import {IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength} from "class-validator";
 
 export type OrderDocument = HydratedDocument<Order>;
 
@@ -21,6 +22,37 @@ export interface OrderItem {
 	img: string;
 	price: number;
 	quantity: number;
+}
+
+export class OrderAddress {
+	@IsNotEmpty()
+	@IsString()
+	recipientName: string;
+
+	@IsNotEmpty()
+	@IsString()
+	street: string;
+
+	@IsOptional()
+	@IsString()
+	additionalInfo: string;
+
+	@IsNotEmpty()
+	@IsString()
+	city: string;
+
+	@IsNotEmpty()
+	@IsString()
+	state: string;
+
+	@IsNotEmpty()
+	@IsString()
+	@MaxLength(5)
+	zipCode: string;
+
+	@IsNotEmpty()
+	@IsNumber()
+	phoneNumber: number;
 }
 
 @Schema({
@@ -49,6 +81,9 @@ export class Order {
 
 	@Prop({ required: true })
 	items: OrderItem[];
+
+	@Prop({ required: true })
+	address: OrderAddress;
 
 	@Prop({ required: true })
 	shippingPrice: number;

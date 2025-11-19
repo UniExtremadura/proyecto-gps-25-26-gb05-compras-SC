@@ -67,6 +67,7 @@ export class OrdersController {
 				order: result.order,
 			};
 		} catch (error) {
+			console.log(error);
 			throw new InternalServerErrorException();
 		}
 	}

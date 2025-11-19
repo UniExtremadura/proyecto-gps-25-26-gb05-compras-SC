@@ -126,7 +126,7 @@ export class OrdersService {
 		});
 
 		let totalPrice = 0;
-		orderItems.forEach((item) => (totalPrice += item.price + item.quantity));
+		orderItems.forEach((item) => (totalPrice += item.price * item.quantity));
 
 		const order = await this.orderModel.create({
 			userUuid: createOrderDto.userUuid,
@@ -134,6 +134,7 @@ export class OrdersService {
 			shippingPrice: shippingRequired ? 500 : 0,
 			totalPrice,
 			stripeSessionId: session.id,
+			address: createOrderDto.address
 		});
 
 		return { order, session };

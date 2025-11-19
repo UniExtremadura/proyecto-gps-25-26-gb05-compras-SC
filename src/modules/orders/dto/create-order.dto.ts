@@ -9,6 +9,7 @@ import {
 	ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import {OrderAddress} from "../schemas/order.schema";
 
 export class OrderItem {
 	@IsNotEmpty()
@@ -36,6 +37,11 @@ export class CreateOrderDto {
 	@ValidateNested({ each: true })
 	@Type(() => OrderItem)
 	items: OrderItem[];
+
+	@IsNotEmpty()
+	@ValidateNested()
+	@Type(() => OrderAddress)
+	address: OrderAddress;
 
 	userUuid: string;
 }

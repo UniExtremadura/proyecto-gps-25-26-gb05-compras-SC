@@ -156,7 +156,7 @@ export class OrdersService {
 
 	async update(updateOrderDto: UpdateOrderDto) {
 		const order = await this.findOneByUuid(updateOrderDto.uuid);
-		return this.orderModel.findByIdAndUpdate(order._id, updateOrderDto, {
+		return this.orderModel.findByIdAndUpdate(order._id, { status: updateOrderDto.status }, {
 			new: true,
 		});
 	}

@@ -16,8 +16,8 @@ import { ServiceTokenProvider } from '../common/providers/service-token.provider
 @Injectable()
 export class AuthGuard implements CanActivate {
 	constructor(
-		private reflector: Reflector,
-		private httpService: HttpService,
+		private readonly reflector: Reflector,
+		private readonly httpService: HttpService,
 		private readonly serviceTokenProvider: ServiceTokenProvider,
 	) {}
 

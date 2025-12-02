@@ -43,22 +43,18 @@ export class AuthGuard implements CanActivate {
 
 		let userRole: 'user' | 'artist' | 'admin';
 
-		try {
-			const serviceToken = await this.serviceTokenProvider.getToken();
-			const roleResponse = await firstValueFrom(
-				this.httpService.get(
-					`${process.env.USUARIOS_SERVICE_BASE_URL}/users/${data.user?.id}`,
-					{
-						headers: {
-							Authorization: `Bearer ${serviceToken}`,
-						},
+		const serviceToken = await this.serviceTokenProvider.getToken();
+		const roleResponse = await firstValueFrom(
+			this.httpService.get(
+				`${process.env.USUARIOS_SERVICE_BASE_URL}/users/${data.user?.id}`,
+				{
+					headers: {
+						Authorization: `Bearer ${serviceToken}`,
 					},
-				),
-			);
-			userRole = roleResponse.data.role;
-		} catch (error) {
-			throw new InternalServerErrorException();
-		}
+				},
+			),
+		);
+		userRole = roleResponse.data.role;
 
 		if (!roles.includes(userRole)) throw new UnauthorizedException();
 

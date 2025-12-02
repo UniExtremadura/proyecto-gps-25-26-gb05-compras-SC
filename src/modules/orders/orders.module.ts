@@ -6,11 +6,13 @@ import { OrdersController } from './orders.controller';
 import { HttpModule } from '@nestjs/axios';
 import { ServiceTokenProvider } from '../../common/providers/service-token.provider';
 import { WebhookController } from './webhook.controller';
+import {PaymentsModule} from "../payments/payments.module";
 
 @Module({
 	imports: [
 		MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
 		HttpModule,
+		PaymentsModule,
 	],
 	controllers: [OrdersController, WebhookController],
 	providers: [OrdersService, ServiceTokenProvider],

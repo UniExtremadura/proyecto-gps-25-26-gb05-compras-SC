@@ -11,17 +11,17 @@ interface TokenData {
 export class ServiceTokenProvider {
 	private email: string = process.env.SERVICE_AUTH_EMAIL!;
 	private password: string = process.env.SERVICE_AUTH_PASSWORD!;
-	private tokenData: TokenData;
+	private tokenData: TokenData | undefined;
 
-	constructor() {
-		this.refreshToken();
-	}
+	constructor() {}
 
 	async getToken(): Promise<string> {
+		if (!this.tokenData) await this.refreshToken();
+
 		if (this.isTokenExpiring()) {
 			await this.refreshToken();
 		}
-		return this.tokenData.accessToken;
+		return this.tokenData!.accessToken;
 	}
 
 	async refreshToken(): Promise<void> {
@@ -38,7 +38,7 @@ export class ServiceTokenProvider {
 
 	private isTokenExpiring(): boolean {
 		const currentTime = Math.floor(Date.now() / 1000);
-		const timeUntilExpiry = this.tokenData.expiresAt - currentTime;
+		const timeUntilExpiry = this.tokenData!.expiresAt - currentTime;
 		return timeUntilExpiry < 60;
 	}
 }
